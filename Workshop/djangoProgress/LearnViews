@@ -1,0 +1,214 @@
+
+
+# ### Model and Serializer (used in all examples)
+# # ```python
+# # models.py
+# from django.db import models
+
+# class Book(models.Model):
+#     title = models.CharField(max_length=200)
+#     author = models.CharField(max_length=100)
+#     published_date = models.DateField()
+
+#     def __str__(self):
+#         return self.title
+
+# # serializers.py
+# from rest_framework import serializers
+# from .models import Book
+
+# class BookSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Book
+#         fields = '__all__'
+# ```
+
+# ### 1. Function-Based Views
+# ```python
+# # views.py
+# from rest_framework.decorators import api_view
+# from rest_framework.response import Response
+# from rest_framework import status
+# from .models import Book
+# from .serializers import BookSerializer
+
+# @api_view(['GET', 'POST'])
+# def book_list(request):
+#     if request.method == 'GET':
+#         books = Book.objects.all()
+#         serializer = BookSerializer(books, many=True)
+#         return Response(serializer.data)
+
+#     elif request.method == 'POST':
+#         serializer = BookSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# ```
+
+# **URLs**
+# ```python
+# # urls.py
+# from django.urls import path
+# from .views import book_list
+
+# urlpatterns = [
+#     path('books/', book_list),
+# ]
+# ```
+
+# ### 2. Class-Based Views (APIView)
+# ```python
+# # views.py
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import status
+# from .models import Book
+# from .serializers import BookSerializer
+
+# class BookList(APIView):
+#     def get(self, request):
+#         books = Book.objects.all()
+#         serializer = BookSerializer(books, many=True)
+#         return Response(serializer.data)
+
+#     def post(self, request):
+#         serializer = BookSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# ```
+
+# **URLs**
+# ```python
+# from django.urls import path
+# from .views import BookList
+
+# urlpatterns = [
+#     path('books/', BookList.as_view()),
+# ]
+# ```
+
+# ### 3. Generic Views (Most Common for Simple CRUD)
+# ```python
+# # views.py
+# from rest_framework import generics
+# from .models import Book
+# from .serializers import BookSerializer
+
+# class BookListCreate(generics.ListCreateAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+
+# class BookDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+# ```
+
+# **URLs**
+# ```python
+# from django.urls import path
+# from .views import BookListCreate, BookDetail
+
+# urlpatterns = [
+#     path('books/', BookListCreate.as_view()),
+#     path('books/<int:pk>/', BookDetail.as_view()),
+# ]
+# ```
+
+# **Very little code!** DRF does all the work.
+
+# ### 4. Mixing (Custom Mixins)
+# ```python
+# # views.py
+# from rest_framework import mixins, generics
+# from .models import Book
+# from .serializers import BookSerializer
+
+# class BookListCreate(mixins.ListModelMixin,
+#                      mixins.CreateModelMixin,
+#                      generics.GenericAPIView):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+
+#     def get(self, request):
+#         return self.list(request)
+
+#     def post(self, request):
+#         return self.create(request)
+# ```
+
+# Same URLs as Generic Views.
+
+# ### 5. ViewSets + Router (Best for Real Projects) + JWT Authentication
+# ```python
+# # views.py
+# from rest_framework import viewsets
+# from rest_framework.permissions import IsAuthenticated  # For JWT protection
+# from .models import Book
+# from .serializers import BookSerializer
+
+# class BookViewSet(viewsets.ModelViewSet):
+#     queryset = Book.objects.all()
+#     serializer_class = BookSerializer
+#     permission_classes = [IsAuthenticated]  # Only logged-in users
+# ```
+
+# **URLs with Router (automatic URLs!)**
+# ```python
+# # urls.py (in your app)
+# from rest_framework.routers import DefaultRouter
+# from .views import BookViewSet
+
+# router = DefaultRouter()
+# router.register(r'books', BookViewSet)
+
+# urlpatterns = router.urls
+# ```
+
+# This automatically creates:
+# - GET /books/ → list
+# - POST /books/ → create
+# - GET /books/1/ → detail
+# - PUT/PATCH /books/1/ → update
+# - DELETE /books/1/ → delete
+
+# **Setting up JWT (simplejwt)**
+# Install:
+# ```bash
+# pip install djangorestframework-simplejwt
+# ```
+
+# # Add to `settings.py`:
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ],
+# }
+# `
+
+# Add token URLs (in main urls.py):
+
+# from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+# urlpatterns = [
+#     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # login → get token
+#     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+# ]
+
+
+# Now users must send JWT token in header:
+
+# Authorization: Bearer <your-token-here>
+
+
+# ### Final Recommendation
+# For most projects in 2026:
+# **Use ViewSets + Routers + JWT**  
+# → Least code, clean URLs, easy to maintain, secure.
+
+# Only use Function-Based or Class-Based if you need very custom logic.
+
+# Let me know if you want a full working project folder structure or want to add search/filter/pagination! 
