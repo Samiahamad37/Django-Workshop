@@ -1,21 +1,21 @@
 from django.urls import path
+from .views import (
+    student_ListCreate,
+    StudentView,
+    StudentListCreate,
+    StudenMixinView
+)
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views import StudentViewSet
 
-urlpatterns =[
-    # url for @api_view
-    path('students/', student_ListCreate()),
+router = DefaultRouter()
+router.register(r'students', StudentViewSet, basename='student')
 
-    # url for APIView
-    path('students/', StudentView.as_view()),
-
-    # url for Generic view
-    path('students/', StudentListCreate.as_view()),
-
-    # url for mixin view
-    path('students/', StudenMixinView.as_view()),
-
-    # url for Viewset
-    router = DefaultRouter()
-    router.register('students', StudentViewSet)
-    urlpatterns=router.urls
+urlpatterns = [
+    path('students/fbv/', student_ListCreate),
+    path('students/apiview/', StudentView.as_view()),
+    path('students/generic/', StudentListCreate.as_view()),
+    path('students/mixin/', StudenMixinView.as_view()),
+    path('', include(router.urls)),
 ]
