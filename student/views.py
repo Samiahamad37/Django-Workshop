@@ -10,6 +10,8 @@ from .models import Student
 from .serializer import StudentSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
+from rest_framework import mixins, generics
+from rest_framework.viewsets import ModelViewSet
 
 
 @api_view(['GET', 'POST'])
@@ -46,7 +48,29 @@ class StudentView(APIView):
         return Response
     
 
-# Generic view
+# ii. Generic view
 class StudentListCreate(ListCreateAPIView):
+    queryset = Student.object.all()
+    serializer_class=StudentSerializer
+
+
+
+# iii. mixin view
+class StudenMixinView(mixins.ListModelMixin,
+                     mixins.CreateModelMixin,
+                     generics.GenericAPIView):
+    queryset = Student.object.all()
+    serializer_class=StudentSerializer
+
+    def get(self, request):
+        return self.list(request)
+    
+    def post(self, request):
+        return self.create(request) 
+    
+
+
+# iv. Viewset
+class StudentViewSet(ModelViewSet):
     queryset = Student.object.all()
     serializer_class=StudentSerializer
