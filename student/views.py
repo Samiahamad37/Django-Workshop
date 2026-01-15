@@ -70,6 +70,6 @@ class StudenMixinView(mixins.ListModelMixin,
 
 
 # # iv. Viewset
-# class StudentViewSet(ModelViewSet):
-#     queryset = Student.object.all()
-#     serializer_class=StudentSerializer
+class StudentViewSet(ModelViewSet):
+    queryset = Student.object.all()
+    serializer_class=StudentSerializer
