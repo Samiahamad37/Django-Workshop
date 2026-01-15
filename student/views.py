@@ -48,24 +48,24 @@ class StudentView(APIView):
         return Response(serializer.data)
 
 # # ii. Generic view
-# class StudentListCreate(ListCreateAPIView):
-#     queryset = Student.object.all()
-#     serializer_class=StudentSerializer
+class StudentListCreate(ListCreateAPIView):
+    queryset = Student.object.all()
+    serializer_class=StudentSerializer
 
 
 
 # # iii. mixin view
-# class StudenMixinView(mixins.ListModelMixin,
-#                      mixins.CreateModelMixin,
-#                      generics.GenericAPIView):
-#     queryset = Student.object.all()
-#     serializer_class=StudentSerializer
+class StudenMixinView(mixins.ListModelMixin,
+                     mixins.CreateModelMixin,
+                     generics.GenericAPIView):
+    queryset = Student.object.all()
+    serializer_class=StudentSerializer
 
-#     def get(self, request):
-#         return self.list(request)
+    def get(self, request):
+        return self.list(request)
     
-#     def post(self, request):
-#         return self.create(request) 
+    def post(self, request):
+        return self.create(request) 
     
 
 
