@@ -6,8 +6,8 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Student
-from .serializer import StudentSerializer
+from .models import Student , Subject
+from .serializer import StudentSerializer, SubjectSerializer
 from rest_framework.views import APIView
 from rest_framework.generics import ListCreateAPIView
 from rest_framework import mixins, generics
@@ -73,3 +73,8 @@ class StudenMixinView(mixins.ListModelMixin,
 class StudentViewSet(ModelViewSet):
     queryset = Student.object.all()
     serializer_class=StudentSerializer
+
+
+class SubjectViewSet(ModelViewSet):
+    queryset = Subject.object.all()
+    serializer_class=SubjectSerializer
