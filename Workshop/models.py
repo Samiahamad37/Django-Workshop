@@ -18,3 +18,11 @@ class Post(models.Model):
    
     def __str__(self):
         return self.title
+
+
+class Comment(models.Model):
+    title = models.TextField()
+    content = models.TextField()
+    post = models.ForeignKey(Post, related_name='comments', on_delete=models.CASCADE)
+    created_date = models.DateTimeField(default=timezone.now)
+    approved_comment = models.BooleanField(default=False)
