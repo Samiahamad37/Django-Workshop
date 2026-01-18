@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404 , redirect
-from .models import Post
+from .models import Post, Comment
 from django.utils import timezone
 from .form import PostForm
 
@@ -40,3 +40,14 @@ def post_edit(request, pk):
     else:
         form = PostForm(instance=post)
     return render(request, 'Workshop/post_edit.html', {'form': form})
+
+
+def add_Comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        comment = Comment(title=title, content=content, post=post)
+        comment.save()
+        return redirect('post_detail', pk=post.pk)
+    
