@@ -50,4 +50,6 @@ def add_Comment(request, pk):
         comment = Comment(title=title, content=content, post=post)
         comment.save()
         return redirect('post_detail', pk=post.pk)
+    return render(request, 'Workshop/add_Comment.html', {'post': post})
+
     
